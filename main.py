@@ -45,13 +45,23 @@ def send_new_message(status_online, players_online, players_max):
         "color": 0x00ff00 if status_online else 0xff0000,
         "thumbnail": {"url": "https://i.postimg.cc/63jfbpjq/40ddf8da-3d69-489e-a338-314a3e6984c3.png"},
         "fields": [
-            {"name": "📡 Status", "value": status_emoji, "inline": True},
-            {"name": "🖥️ Address:Port", "value": f"`{SERVER_ADDRESS}:{SERVER_PORT}`", "inline": True},
-            {"name": "🌍 Region", "value": ":flag_eu: Europe", "inline": True},
-            {"name": "🎮 Game", "value": "Minecraft", "inline": True},
-            {"name": "👥 Players Online", "value": players_value, "inline": True},
-            {"name": "📜 Version", "value": "1.21.5 & Bedrock Support", "inline": True}
-        ],
+    {"name": "📡 Status", "value": status_emoji, "inline": True},
+    {"name": "\u200b", "value": "\u200b", "inline": True},  # campo vuoto per spazio
+
+    {"name": "🖥️ Address:Port", "value": f"`{SERVER_ADDRESS}:{SERVER_PORT}`", "inline": True},
+    {"name": "\u200b", "value": "\u200b", "inline": True},
+
+    {"name": "🌍 Region", "value": ":flag_eu: Europe", "inline": True},
+    {"name": "\u200b", "value": "\u200b", "inline": True},
+
+    {"name": "🎮 Game", "value": "Minecraft", "inline": True},
+    {"name": "\u200b", "value": "\u200b", "inline": True},
+
+    {"name": "👥 Players Online", "value": players_value, "inline": True},
+    {"name": "\u200b", "value": "\u200b", "inline": True},
+
+    {"name": "📜 Version", "value": "1.21.5 & Bedrock Support", "inline": True}
+],
         "footer": {
             "text": "Last updated: " + datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
             "icon_url": "https://i.postimg.cc/63jfbpjq/40ddf8da-3d69-489e-a338-314a3e6984c3.png"
