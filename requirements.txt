@@ -1,3 +1,5 @@
 mcstatus==5.0.0
 flask
+mcstatus
 requests
+gunicorn
