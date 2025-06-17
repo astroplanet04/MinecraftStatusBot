@@ -2,6 +2,7 @@ from flask import Flask
 from mcstatus import MinecraftServer
 import requests
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -24,51 +25,71 @@ def leggi_id_messaggio():
 def delete_message():
     msg_id = leggi_id_messaggio()
     if not msg_id:
-        print("Nessun ID messaggio da eliminare")
+        print("No message ID to delete.")
         return
-
-    # L'URL deve togliere la parte "/api/webhooks" per eliminare messaggi
-    # Discord webhook elimina messaggi con: https://discord.com/api/webhooks/{webhook.id}/{webhook.token}/messages/{msg.id}
-    # Quindi usiamo direttamente WEBHOOK_URL + "/messages/{msg_id}"
 
     url = f"{WEBHOOK_URL}/messages/{msg_id}"
     response = requests.delete(url)
     if response.status_code == 204:
-        print(f"Messaggio eliminato con successo (ID: {msg_id})")
+        print(f"Message deleted successfully (ID: {msg_id})")
     else:
-        print(f"Errore eliminazione messaggio {msg_id}: {response.status_code} - {response.text}")
+        print(f"Error deleting message {msg_id}: {response.status_code} - {response.text}")
 
 def send_new_message(status_online, players_online, players_max):
-    status_emoji = "🟢 Online" if status_online else "🔴 Offline"
+    status_emoji = "🟢 **Online**" if status_online else "🔴 **Offline**"
     players_value = f"{players_online}/{players_max}" if status_online else "0/0"
 
     embed = {
-        "title": "BREVTH Alpha v1.0.6                   1.21.5 & ʙᴇᴅʀᴏᴄᴋ ꜱᴜᴘᴘᴏʀᴛ | ᴅᴜᴇʟꜱ &",
-        "description": "This server has many modes: bedwars, skywars, skyblock, oneblock and much more... lots of fun!",
-        "color": 0x1abc9c if status_online else 0xe74c3c,
+        "title": "**🌐 BREVTH Alpha v1.0.6**",
+        "description": "🎮 **Minecraft Server Status Update**\nJoin and have fun with Bedwars, Skywars, Skyblock, Oneblock, and more!",
+        "color": 0x00ff00 if status_online else 0xff0000,
         "thumbnail": {"url": "https://i.postimg.cc/63jfbpjq/40ddf8da-3d69-489e-a338-314a3e6984c3.png"},
         "fields": [
-            {"name": "Status", "value": status_emoji, "inline": True},
-            {"name": "Address:Port", "value": f"{SERVER_ADDRESS}:{SERVER_PORT}", "inline": True},
-            {"name": "Country", "value": ":flag_eu: EU", "inline": True},
-            {"name": "Game", "value": "Minecraft", "inline": True},
-            {"name": "Players Online", "value": players_value, "inline": True}
+            {"name": "📡 Status", "value": status_emoji, "inline": True},
+            {"name": "🖥️ Address:Port", "value": f"`{SERVER_ADDRESS}:{SERVER_PORT}`", "inline": True},
+            {"name": "🌍 Region", "value": ":flag_eu: Europe", "inline": True},
+            {"name": "🎮 Game", "value": "Minecraft", "inline": True},
+            {"name": "👥 Players Online", "value": players_value, "inline": True},
+            {"name": "📜 Version", "value": "1.21.5 & Bedrock Support", "inline": True}
+        ],
+        "footer": {
+            "text": "Last updated: " + datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            "icon_url": "https://i.postimg.cc/63jfbpjq/40ddf8da-3d69-489e-a338-314a3e6984c3.png"
+        },
+        "timestamp": datetime.utcnow().isoformat(),
+        "components": [
+            {
+                "type": 1,
+                "components": [
+                    {
+                        "type": 2,
+                        "style": 5,
+                        "label": "🌐 Visit Website",
+                        "url": "https://minecraftstatusbot.onrender.com"
+                    },
+                    {
+                        "type": 2,
+                        "style": 5,
+                        "label": "📜 Server Rules",
+                        "url": "https://discord.gg/your-invite-code"
+                    }
+                ]
+            }
         ]
     }
 
     data = {"embeds": [embed]}
-    # Per ottenere la risposta con id messaggio serve ?wait=true
     response = requests.post(WEBHOOK_URL + "?wait=true", json=data)
     if response.status_code in (200, 201):
         try:
             msg_id = response.json().get("id")
             if msg_id:
                 salva_id_messaggio(msg_id)
-            print(f"Messaggio inviato con successo, ID salvato: {msg_id}")
+            print(f"Message sent successfully, ID saved: {msg_id}")
         except Exception as e:
-            print("Errore parsing risposta JSON:", e)
+            print("Error parsing response JSON:", e)
     else:
-        print(f"Errore invio messaggio: {response.status_code} - {response.text}")
+        print(f"Error sending message: {response.status_code} - {response.text}")
 
 @app.route("/", methods=["GET"])
 def check_server():
@@ -80,16 +101,15 @@ def check_server():
         players_max = status.players.max
         print(f"Server online: {players_online}/{players_max}")
     except Exception as e:
-        print(f"Errore controllo server: {e}")
+        print(f"Error checking server: {e}")
         status_online = False
         players_online = 0
         players_max = 0
 
-    # Elimina vecchio messaggio, invia nuovo
     delete_message()
     send_new_message(status_online, players_online, players_max)
 
-    return "Status inviato a Discord!", 200
+    return "Status sent to Discord!", 200
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
