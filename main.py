@@ -2,16 +2,16 @@ from flask import Flask
 from mcstatus import MinecraftServer
 import requests
 import os
-from datetime import datetime
 
 app = Flask(__name__)
 
+# === Configuration ===
 SERVER_ADDRESS = "mc.brevthcraft.net"
 SERVER_PORT = 25565
-
 WEBHOOK_URL = "https://discord.com/api/webhooks/1384164764883619922/wkmz0UCq36CgUetARP2nLyXJamZddxwNd_1MndGyx4tZMkiREXbi7_dZ57P-2Rq8gJGo"
 MESSAGE_ID_FILE = "message_id.txt"
 
+# === Utility functions ===
 def salva_id_messaggio(msg_id):
     with open(MESSAGE_ID_FILE, "w") as f:
         f.write(str(msg_id))
@@ -22,6 +22,7 @@ def leggi_id_messaggio():
             return f.read().strip()
     return None
 
+# === Discord Message Management ===
 def delete_message():
     msg_id = leggi_id_messaggio()
     if not msg_id:
@@ -36,46 +37,25 @@ def delete_message():
         print(f"Error deleting message {msg_id}: {response.status_code} - {response.text}")
 
 def send_new_message(status_online, players_online, players_max):
-    status_emoji = "🟢 **Online**" if status_online else "🔴 **Offline**"
+    status_emoji = "🟢 Online" if status_online else "🔴 Offline"
     players_value = f"{players_online}/{players_max}" if status_online else "0/0"
 
     embed = {
-        "title": "**🌐 BREVTH Alpha v1.0.6**",
-        "description": "🎮 **Minecraft Server Status Update**\nJoin and have fun with Bedwars, Skywars, Skyblock, Oneblock, and more!",
-        "color": 0x00ff00 if status_online else 0xff0000,
+        "title": "BREVTH Alpha v1.0.6   |   1.21.5 + Bedrock Support   |   Duels & More",
+        "description": "This server features exciting modes such as **BedWars**, **SkyWars**, **SkyBlock**, **OneBlock**, and much more... Join for endless fun! 🎮",
+        "color": 0x1abc9c if status_online else 0xe74c3c,
         "thumbnail": {"url": "https://i.postimg.cc/63jfbpjq/40ddf8da-3d69-489e-a338-314a3e6984c3.png"},
         "fields": [
-            {"name": "📡 Status", "value": status_emoji, "inline": True},
-            {"name": "🖥️ Address:Port", "value": f"`{SERVER_ADDRESS}:{SERVER_PORT}`", "inline": True},
-            {"name": "🌍 Region", "value": ":flag_eu: Europe", "inline": True},
-            {"name": "🎮 Game", "value": "Minecraft", "inline": True},
-            {"name": "👥 Players Online", "value": players_value, "inline": True},
-            {"name": "📜 Version", "value": "1.21.5 & Bedrock Support", "inline": True}
+            {"name": "Status", "value": status_emoji, "inline": True},
+            {"name": "Address:Port", "value": f"`{SERVER_ADDRESS}:{SERVER_PORT}`", "inline": True},
+            {"name": "Region", "value": ":flag_eu: Europe", "inline": True},
+            {"name": "Game", "value": "Minecraft", "inline": True},
+            {"name": "Players Online", "value": players_value, "inline": True},
+            {"name": "Version", "value": "`1.21.5 + Bedrock`", "inline": True}
         ],
         "footer": {
-            "text": "Last updated: " + datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
-            "icon_url": "https://i.postimg.cc/63jfbpjq/40ddf8da-3d69-489e-a338-314a3e6984c3.png"
-        },
-        "timestamp": datetime.utcnow().isoformat(),
-        "components": [
-            {
-                "type": 1,
-                "components": [
-                    {
-                        "type": 2,
-                        "style": 5,
-                        "label": "🌐 Visit Website",
-                        "url": "https://minecraftstatusbot.onrender.com"
-                    },
-                    {
-                        "type": 2,
-                        "style": 5,
-                        "label": "📜 Server Rules",
-                        "url": "https://discord.gg/your-invite-code"
-                    }
-                ]
-            }
-        ]
+            "text": "BrevthCraft Network • Auto Status Bot"
+        }
     }
 
     data = {"embeds": [embed]}
@@ -87,10 +67,11 @@ def send_new_message(status_online, players_online, players_max):
                 salva_id_messaggio(msg_id)
             print(f"Message sent successfully, ID saved: {msg_id}")
         except Exception as e:
-            print("Error parsing response JSON:", e)
+            print("Error parsing JSON response:", e)
     else:
         print(f"Error sending message: {response.status_code} - {response.text}")
 
+# === Web Route ===
 @app.route("/", methods=["GET"])
 def check_server():
     try:
@@ -111,6 +92,7 @@ def check_server():
 
     return "Status sent to Discord!", 200
 
+# === App Runner ===
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
