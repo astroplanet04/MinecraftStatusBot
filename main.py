@@ -59,6 +59,7 @@ def send_new_message(status_online, players_online, players_max):
     "footer": {
         "text": "BrevthCraft Network • Auto Status Bot"
     }
+}
 
     data = {"embeds": [embed]}
     response = requests.post(WEBHOOK_URL + "?wait=true", json=data)
