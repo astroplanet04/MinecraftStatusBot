@@ -53,9 +53,6 @@ def send_new_message(status_online, players_online, players_max):
             {"name": "Players Online", "value": players_value, "inline": True},
             {"name": "Version", "value": "`1.21.5 + Bedrock`", "inline": True}
         ],
-    "image": {
-        "url": "https://i.postimg.cc/cHPwNhrY/provalogobrevthcraft.png"  # qui metti il banner grosso sotto
-    },
     "footer": {
         "text": "BrevthCraft Network • Auto Status Bot"
     }
