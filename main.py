@@ -8,7 +8,7 @@ app = Flask(__name__)
 # === Configuration ===
 SERVER_ADDRESS = "mc.brevthcraft.net"
 SERVER_PORT = 25565
-WEBHOOK_URL = "https://discord.com/api/webhooks"
+WEBHOOK_URL = "https://discord.com/api/webhooks/1385190947419197540/sja3juEsfiRpe9AeKk7JqaM1ThAOT0ZX3kPs212np21YEgHCmJ5YRu1XDQE-3zyJ_z3J"
 MESSAGE_ID_FILE = "message_id.txt"
 
 # === Utility functions ===
